@@ -23,6 +23,16 @@ pipeline {
             }
         }
 
+        stage('Design Quality & Safety Checks') {
+            steps {
+                echo "================================="
+                echo "STAGE 3: DESIGN QUALITY CHECKS"
+                echo "================================="
+
+                sh './scripts/compliance_check.sh'
+            }
+        }
+
     }
 
     post {
