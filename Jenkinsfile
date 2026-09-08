@@ -29,7 +29,7 @@ pipeline {
                 echo "STAGE 3: DESIGN QUALITY CHECKS"
                 echo "================================="
 
-                sh './scripts/compliance_check.sh'
+                sh './scripts/design_quality_check.sh'
             }
         }
 
