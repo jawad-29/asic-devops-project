@@ -2,7 +2,7 @@ terraform {
   required_providers {
     kubernetes = {
       source  = "hashicorp/kubernetes"
-      version = "~> 2.0"
+      version = "~> 3.2"
     }
   }
 }
@@ -11,23 +11,42 @@ provider "kubernetes" {
   config_path = "~/.kube/config"
 }
 
-resource "kubernetes_namespace" "devops_eda" {
+resource "kubernetes_namespace_v1" "eda" {
   metadata {
-    name = "devops-eda"
+    name = "semiconductor-devops"
   }
 }
 
-resource "kubernetes_pod" "eda_runner" {
+resource "kubernetes_job_v1" "openroad" {
   metadata {
-    name      = "openroad-runner"
-    namespace = kubernetes_namespace.devops_eda.metadata[0].name
+    name      = "openroad-eda-job"
+    namespace = kubernetes_namespace_v1.eda.metadata[0].name
   }
+
   spec {
-    container {
-      name    = "openroad-container"
-      image   = "efabless/openlane:v0.2"
-      command = ["/bin/sh", "-c", "sleep 3600"]
+    backoff_limit = 1
+
+    template {
+      metadata {
+        labels = {
+          app = "openroad-eda"
+        }
+      }
+
+      spec {
+        restart_policy = "Never"
+
+        container {
+          name  = "openroad"
+          image = "ghcr.io/the-openroad-project/openlane:1.0.2"
+
+          command = [
+            "/bin/bash",
+            "-c",
+            "/build/bin/openroad -version"
+          ]
+        }
+      }
     }
   }
 }
-
