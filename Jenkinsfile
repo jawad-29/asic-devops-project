@@ -33,6 +33,18 @@ pipeline {
             }
         }
 
+        stage('Terraform Validate & Plan') {
+            steps {
+                echo "================================="
+                echo "STAGE 4: TERRAFORM VALIDATION"
+                echo "================================="
+
+                sh 'terraform -chdir=terraform init -backend=false'
+                sh 'terraform -chdir=terraform validate'
+                sh 'terraform -chdir=terraform plan'
+            }
+        }
+
     }
 
     post {
